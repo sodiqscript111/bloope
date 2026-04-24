@@ -20,7 +20,7 @@ The project is intentionally scoped as a one-page deployment pipeline:
 
 ## Feedback Deploying on brimble
 
-> All i have to say is this is the fastest have deploy a project ever, extremly fast , i wanted to open another tab to do other stuff and the moment i moved my mouse to open a tab , it's done , the reason the speed is extremly insane to me is cos the project has videos and pictures in it 
+> All i have to say is this is the fastest have deploy a project ever, extremly fast , i wanted to open another tab to do other stuff and the moment i moved my mouse to open a tab , it's done , the reason the speed is extremly insane to me is cos the project has videos and pictures in it , one little problem is that i find it a little add to find teh live url , it should be in a more obvious place or let the view live text be bolderr and have lighter color
 
 ---
 
@@ -310,11 +310,11 @@ The same handlers are also mounted without the `/api` prefix.
 
 ### SSE over WebSocket
 
-I used SSE for live deployment logs because log streaming here is one-way from backend to UI. That kept the implementation smaller and easier to reason about than a WebSocket-based design.
+I used SSE for live deployment logs because log streaming here is one-way from backend to UI. That kept the implementation smaller and easier to reason about than a WebSocket-based design. Will use websocket and a pub and sub in prod for scalability
 
 ### Explicit state engine
 
-I modeled the deployment lifecycle explicitly and kept valid transitions centralized: `pending -> building -> deploying -> running`, with failure possible at each stage. This makes the workflow easier to reason about and prevents invalid state jumps.
+I modeled the deployment lifecycle explicitly and kept valid transitions centralized: `pending -> building -> deploying -> running`, with failure possible at each stage. This makes the workflow easier to reason about and prevents invalid state jumps. too litle but will extend if  given more time 
 
 ### In-process job execution
 
@@ -334,6 +334,8 @@ SQLite was enough for a local-first MVP and made it easy to persist deployment s
 - Replace in-process job execution with a durable queue such as Redis Streams
 - Add authentication and user-scoped deployments
 - Reuse build cache and artifacts to reduce rebuild times
+- Use websocket plus a pub and sub for scalability 
+- Add clearer error to user
 - Add stronger health checks before switching traffic live
 
 ## What I'd Rip Out or Simplify
