@@ -1,0 +1,10 @@
+.git
+.cache
+.gocache
+data
+tmp
+frontend/node_modules
+frontend/dist
+frontend/.vite
+*.exe
+*.log

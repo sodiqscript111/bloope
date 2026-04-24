@@ -1,0 +1,8 @@
+.cache/
+.gocache/
+*.exe
+data/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+tmp/

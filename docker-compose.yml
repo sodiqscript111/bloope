@@ -1,0 +1,63 @@
+services:
+  bloope:
+    build:
+      context: .
+    container_name: bloope
+    depends_on:
+      - buildkit
+      - caddy
+    ports:
+      - "8080:8080"
+    environment:
+      GIN_MODE: release
+      BLOOPE_FRONTEND_DIR: /app/frontend/dist
+      BLOOPE_DB_PATH: /app/data/bloope.db
+      BLOOPE_CADDYFILE_PATH: /app/tmp/caddy/Caddyfile
+      BLOOPE_CADDY_CONTAINER: bloope-compose-caddy
+      BLOOPE_CADDY_PORT: "8081"
+      BLOOPE_DEPLOYMENT_HOST_SUFFIX: localhost
+      BLOOPE_PUBLIC_SCHEME: http
+      BLOOPE_CONTAINER_PORT: "8080"
+      RAILPACK_BIN: /usr/local/bin/railpack
+      RAILPACK_USE_WSL: "0"
+      BUILDKIT_HOST: docker-container://bloope-buildkit
+      DOCKER_BIN: docker
+      BLOOPE_GITHUB_TOKEN: ${BLOOPE_GITHUB_TOKEN:-}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - bloope-data:/app/data
+      - bloope-tmp:/app/tmp
+      - caddy-config:/app/tmp/caddy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: bloope-compose-caddy
+    ports:
+      - "8081:8081"
+    volumes:
+      - caddy-config:/etc/caddy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ ! -f /etc/caddy/Caddyfile ]; then
+          printf '{\n\tauto_https off\n}\n\nhttp://:8081 {\n\trespond /healthz "ok" 200\n}\n' > /etc/caddy/Caddyfile
+        fi
+        exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+    restart: unless-stopped
+
+  buildkit:
+    image: moby/buildkit:latest
+    container_name: bloope-buildkit
+    privileged: true
+    restart: unless-stopped
+
+volumes:
+  bloope-data:
+  bloope-tmp:
+  caddy-config:
